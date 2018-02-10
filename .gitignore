@@ -1,0 +1,14 @@
+# Qt
+Makefile*
+debug
+release/
+debug/
+*.autosave
+*.pro.user
+
+# MSVC
+*.pdb
+
+# Other
+binaries_*.zip
+pdb_symbols_*.zip
