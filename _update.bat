@@ -4,7 +4,7 @@ color 0c
 echo.
 echo WARNING!
 echo This script will delete EVERY file and directory below this root directory
-echo exept a few whitelisted ones like x64dbg config, plugins and databases.
+echo except a few whitelisted ones like x64dbg config, plugins and databases.
 echo Please review this batch file for yourself and edit it suiting your personal
 echo needs.
 echo.
