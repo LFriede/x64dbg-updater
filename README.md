@@ -9,7 +9,7 @@ At the first start with this plugin installed you will be asked if you want to a
 ## Installation
 
 Binary versions can be downloaded on the GitHub [release page](https://github.com/LFriede/x64dbg-updater/releases). The directory structure of the releases matches with the x64dbg snapshots, this makes installation easy, just unpack x64dbg and the updater in the same directory. Please **don't** relocate the `_updater.bat` script.  
-`*.pdb` can be downloaded in a seperate archive on the release page and should be unpacked in the same directory as the plugin file.
+**Optional:** The following step is only required if you want to debug this plugin. `*.pdb` files can be downloaded in a seperate archive on the release page and should be unpacked in the same directory as the plugin file.
 
 
 ## Build
