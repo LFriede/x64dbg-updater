@@ -32,6 +32,11 @@ for /D %%i in (release\x64\*) do call :removedir "%%i"
 
 7za.exe x %1
 
+@rem issue #1 workaround that assigns current date/time to the files
+@rem there will be a nicer fix soon, i promise ;)
+copy /b release\x64\x64dbg.exe+,, release\x64\x64dbg.exe
+copy /b release\x32\x32dbg.exe+,, release\x32\x32dbg.exe
+
 del /F %1
 
 goto :end
