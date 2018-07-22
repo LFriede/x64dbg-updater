@@ -125,22 +125,28 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     myDlg->updaterPath = upath;
 
     HANDLE hFile;
-    hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE) { return; }
+    hFile = CreateFileW(
+        upath.append("commithash.txt").toStdWString().c_str(),
+        GENERIC_READ, FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
+    );
+    if (hFile == INVALID_HANDLE_VALUE) {
+        _plugin_logputs("x64dbg Updater: Error reading commithash.txt");
+        return;
+    }
 
-    FILETIME ftWrite;
-    if (!GetFileTime(hFile, NULL, NULL, &ftWrite)) {
+    char commithash[41];
+    DWORD len;
+    commithash[40] = 0;
+    ReadFile(hFile, &commithash, 40, &len, NULL);
+    if (len != 40) {
         CloseHandle(hFile);
+        _plugin_logputs("x64dbg Updater: Error reading commithash.txt");
         return;
     }
     CloseHandle(hFile);
 
-    SYSTEMTIME sysTime;
-    FileTimeToSystemTime(&ftWrite, &sysTime);
-
-    myDlg->currentDate.setDate(QDate(sysTime.wYear, sysTime.wMonth, sysTime.wDay));
-    myDlg->currentDate.setTime(QTime(sysTime.wHour, sysTime.wMinute, sysTime.wSecond));
-    myDlg->currentDate.setUtcOffset(0);
+    myDlg->currentCommitHash = commithash;
 
 
     if (autoCheck) {

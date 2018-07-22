@@ -14,7 +14,7 @@ class UpdateForm : public QWidget
     Q_OBJECT
 
 public:
-    QDateTime currentDate;
+    QString currentCommitHash;
     QString updaterPath;
     explicit UpdateForm(QWidget *parent = 0);
     void checkUpdate(bool autoUpdate);
@@ -23,7 +23,8 @@ public:
 public slots:
     void downloadFinished(QNetworkReply *reply);
     void downloadReadyRead();
-    void replyFinished(QNetworkReply *reply);
+    void replyFinished_commits(QNetworkReply *reply);
+    void replyFinished_releases(QNetworkReply *reply);
 
 private slots:
     void on_applyButton_clicked();

@@ -27,7 +27,7 @@ class Ui_UpdateForm
 {
 public:
     QVBoxLayout *verticalLayout;
-    QLabel *lblCurrentDate;
+    QLabel *lblCurrentVersion;
     QLabel *lblLatestVersion;
     QSpacerItem *verticalSpacer_2;
     QProgressBar *progressBar;
@@ -43,10 +43,10 @@ public:
         UpdateForm->resize(400, 175);
         verticalLayout = new QVBoxLayout(UpdateForm);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        lblCurrentDate = new QLabel(UpdateForm);
-        lblCurrentDate->setObjectName(QStringLiteral("lblCurrentDate"));
+        lblCurrentVersion = new QLabel(UpdateForm);
+        lblCurrentVersion->setObjectName(QStringLiteral("lblCurrentVersion"));
 
-        verticalLayout->addWidget(lblCurrentDate);
+        verticalLayout->addWidget(lblCurrentVersion);
 
         lblLatestVersion = new QLabel(UpdateForm);
         lblLatestVersion->setObjectName(QStringLiteral("lblLatestVersion"));
@@ -81,7 +81,7 @@ public:
 
         applyButton = new QPushButton(UpdateForm);
         applyButton->setObjectName(QStringLiteral("applyButton"));
-        applyButton->setEnabled(false);
+        applyButton->setEnabled(true);
 
         verticalLayout->addWidget(applyButton);
 
@@ -94,8 +94,8 @@ public:
     void retranslateUi(QWidget *UpdateForm)
     {
         UpdateForm->setWindowTitle(QApplication::translate("UpdateForm", "x64dbg Updater", 0));
-        lblCurrentDate->setText(QApplication::translate("UpdateForm", "Current file date:", 0));
-        lblLatestVersion->setText(QApplication::translate("UpdateForm", "Latest snapshot:", 0));
+        lblCurrentVersion->setText(QApplication::translate("UpdateForm", "Current commit:", 0));
+        lblLatestVersion->setText(QApplication::translate("UpdateForm", "Latest commit:", 0));
         lblProgress->setText(QApplication::translate("UpdateForm", "Status:", 0));
         label->setText(QApplication::translate("UpdateForm", "Show latest <a href=\"https://github.com/x64dbg/x64dbg/commits\">commits</a> on GitHub.", 0));
         applyButton->setText(QApplication::translate("UpdateForm", "Apply update", 0));

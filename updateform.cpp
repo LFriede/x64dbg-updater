@@ -10,6 +10,9 @@
 
 #include "pluginmain.h"
 
+#define EXCEPTION_NETWORK 0
+#define EXCEPTION_JSON 1
+
 UpdateForm::UpdateForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::UpdateForm)
@@ -27,8 +30,9 @@ UpdateForm::UpdateForm(QWidget *parent) :
 void UpdateForm::checkUpdate(bool autoUpdate) {
     autoUpdateFlag = autoUpdate;
 
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/x64dbg/x64dbg/releases/latest")));
+    disconnect(manager, SIGNAL(finished(QNetworkReply*)), 0, 0);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished_commits(QNetworkReply*)));
+    manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/x64dbg/x64dbg/commits")));
 }
 
 void UpdateForm::downloadFinished(QNetworkReply *reply) {
@@ -79,99 +83,144 @@ void UpdateForm::downloadReadyRead() {
     dlFile.write(dlReply->readAll());
 }
 
-void UpdateForm::replyFinished(QNetworkReply *reply) {
-    if(reply->error() != QNetworkReply::NoError) { //error
-        _plugin_logprint("x64dbg Updater: network error -> ");
-        _plugin_logputs(reply->errorString().toStdString().c_str());
-        reply->deleteLater();
-        return;
-    }
-
-    json_error_t error;
-    json_t *json = json_loads(reply->readAll().data(), 0, &error);
+void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
     reply->deleteLater();
-    if (!json) { return; }
 
-    if (!json_is_object(json)) {
+    json_t *json = NULL;
+
+    try {
+        if(reply->error() != QNetworkReply::NoError) {
+            throw EXCEPTION_NETWORK;
+        }
+
+        json_error_t error;
+        json = json_loads(reply->readAll().data(), 0, &error);
+        reply->deleteLater();
+        if (!json) { throw EXCEPTION_JSON; }
+
+        if (!json_is_array(json)) { throw EXCEPTION_JSON; }
+
+        json_t *commit;
+        commit = json_array_get(json, 0);
+        if (!json_is_object(commit)) { throw EXCEPTION_JSON; }
+
+        json_t *commithash;
+        commithash = json_object_get(commit, "sha");
+        if (!json_is_string(commithash)) { throw EXCEPTION_JSON; }
+        QString sCommithash = QString(json_string_value(commithash));
+
+
+        json_t *commit_;
+        commit_ = json_object_get(commit, "commit");
+        if (!json_is_object(commit_)) { throw EXCEPTION_JSON; }
+
+        json_t *author;
+        author = json_object_get(commit_, "author");
+        if (!json_is_object(author)) { throw EXCEPTION_JSON; }
+
+        json_t *date;
+        date = json_object_get(author, "date");
+        if (!json_is_string(date)) { throw EXCEPTION_JSON; }
+        QDateTime datetime = QDateTime::fromString(json_string_value(date), Qt::ISODate);
+
+        ui->lblLatestVersion->setText("Latest commit:\t" + sCommithash.left(7) + " - " + datetime.toLocalTime().toString());
+
         json_decref(json);
-        return;
-    }
 
-    json_t *date;
-    date = json_object_get(json, "published_at");
-    if (!json_is_string(date)) {
-        json_decref(json);
-        return;
-    }
 
-    QDateTime datetime = QDateTime::fromString(json_string_value(date), Qt::ISODate);
-    ui->lblLatestVersion->setText("Latest snapshot: " + datetime.toLocalTime().toString());
+        if (autoUpdateFlag) {
+            if (sCommithash != currentCommitHash) {
+                _plugin_logputs("x64dbg Updater: autoCheck found new commits.");
+                show();
+            } else {
+                _plugin_logputs("x64dbg Updater: autoCheck found no new commits.");
+            }
+        }
+        autoUpdateFlag = false;
 
-    json_t *url;
-    json_t *assets;
-    assets = json_object_get(json, "assets");
-    if (!json_is_array(assets)) {
-        json_decref(json);
-        return;
-    }
-    assets = json_array_get(assets, 0);
-    if (!json_is_object(assets)) {
-        json_decref(json);
-        return;
-    }
+    } catch (int e) {
+        switch (e) {
+            case EXCEPTION_NETWORK: {
+                _plugin_logprint("x64dbg Updater: network error -> ");
+                _plugin_logputs(reply->errorString().toStdString().c_str());
+                break;
+            }
+            case EXCEPTION_JSON: {
+                _plugin_logputs("x64dbg Updater: JSON error");
+                break;
+            }
+        }
 
-    url = json_object_get(assets, "browser_download_url");
-    if (!json_is_string(url)) {
-        json_decref(json);
-        return;
-    }
-    updateUrl = json_string_value(url);
-
-    json_t *size = json_object_get(assets, "size");
-    if (!json_is_integer(size)) {
-        json_decref(json);
-        return;
-    }
-    dlSize = json_integer_value(size);
-    ui->progressBar->setMaximum(dlSize);
-    ui->lblProgress->setText("Status: "+QString().setNum(dlSize / 1024.0 / 1024.0, 'f' ,2)+" MiB to download");
-
-    json_decref(json);
-
-    ui->progressBar->setEnabled(true);
-    ui->applyButton->setEnabled(true);
-
-    if (autoUpdateFlag) {
-        QDateTime testTime = QDateTime(currentDate).addSecs(5*60); // +5 Minutes for compare (guessed build / publish time delay)
-        if (datetime > testTime) {
-            _plugin_logputs("x64dbg Updater: autoCheck found new snapshot.");
-            show();
-        } else {
-            _plugin_logputs("x64dbg Updater: autoCheck found no new snapshot.");
+        if (json) {
+            json_decref(json);
         }
     }
-    autoUpdateFlag = false;
 }
 
-void UpdateForm::showEvent(QShowEvent *event) {
-    ui->lblCurrentDate->setText("Current file date: " + currentDate.toLocalTime().toString());
+void UpdateForm::replyFinished_releases(QNetworkReply *reply) {
+    json_t *json = NULL;
 
-    if (autoUpdateFlag == false) {
-        checkUpdate(false);
+    try {
+        if(reply->error() != QNetworkReply::NoError) { //error
+            throw EXCEPTION_NETWORK;
+        }
+
+        json_error_t error;
+        char* x = reply->readAll().data();
+        json = json_loads(x, 0, &error);
+        reply->deleteLater();
+        if (!json) { throw EXCEPTION_JSON; }
+
+        if (!json_is_object(json)) { throw EXCEPTION_JSON; }
+
+
+        json_t *url;
+        json_t *assets;
+        assets = json_object_get(json, "assets");
+        if (!json_is_array(assets)) { throw EXCEPTION_JSON; }
+        assets = json_array_get(assets, 0);
+        if (!json_is_object(assets)) { throw EXCEPTION_JSON; }
+
+        url = json_object_get(assets, "browser_download_url");
+        if (!json_is_string(url)) { throw EXCEPTION_JSON; }
+        updateUrl = json_string_value(url);
+
+
+        json_t *size = json_object_get(assets, "size");
+        if (!json_is_integer(size)) { throw EXCEPTION_JSON; }
+
+        dlSize = json_integer_value(size);
+        ui->progressBar->setMaximum(dlSize);
+        ui->lblProgress->setText("Status: "+QString().setNum(dlSize / 1024.0 / 1024.0, 'f' ,2)+" MiB to download");
+
+        json_decref(json);
+
+        ui->progressBar->setEnabled(true);
+
+    } catch (int e) {
+        switch (e) {
+            case EXCEPTION_NETWORK: {
+                _plugin_logprint("x64dbg Updater: network error -> ");
+                _plugin_logputs(reply->errorString().toStdString().c_str());
+                break;
+            }
+            case EXCEPTION_JSON: {
+                _plugin_logputs("x64dbg Updater: JSON error");
+                break;
+            }
+        }
+
+        if (json) {
+            json_decref(json);
+        }
     }
-}
 
-UpdateForm::~UpdateForm()
-{
-    delete ui;
-    delete manager;
-}
 
-void UpdateForm::on_applyButton_clicked()
-{
+    // Download file
     TCHAR path[MAX_PATH];
     if (!GetTempPathW(MAX_PATH, path)) { return; }
 
+    disconnect(manager, SIGNAL(finished(QNetworkReply*)), 0, 0);
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
 
     dlFile.setFileName(QString::fromWCharArray(path).append("x64dbg_snapshot.zip"));
@@ -179,4 +228,23 @@ void UpdateForm::on_applyButton_clicked()
 
     dlReply = manager->get(QNetworkRequest(QUrl(updateUrl)));
     connect(dlReply, SIGNAL(readyRead()), this, SLOT(downloadReadyRead()));
+}
+
+void UpdateForm::showEvent(QShowEvent *event) {
+    ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7));
+
+    if (autoUpdateFlag == false) {
+        checkUpdate(false);
+    }
+}
+
+UpdateForm::~UpdateForm() {
+    delete ui;
+    delete manager;
+}
+
+void UpdateForm::on_applyButton_clicked() {
+    disconnect(manager, SIGNAL(finished(QNetworkReply*)), 0, 0);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished_releases(QNetworkReply*)));
+    manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/x64dbg/x64dbg/releases/latest")));
 }
