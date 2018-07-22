@@ -158,6 +158,8 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
 }
 
 void UpdateForm::replyFinished_releases(QNetworkReply *reply) {
+    reply->deleteLater();
+
     json_t *json = NULL;
 
     try {
@@ -168,7 +170,6 @@ void UpdateForm::replyFinished_releases(QNetworkReply *reply) {
         json_error_t error;
         char* x = reply->readAll().data();
         json = json_loads(x, 0, &error);
-        reply->deleteLater();
         if (!json) { throw EXCEPTION_JSON; }
 
         if (!json_is_object(json)) { throw EXCEPTION_JSON; }
