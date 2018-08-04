@@ -5,6 +5,7 @@ release/
 debug/
 *.autosave
 *.pro.user
+ui_*.h
 
 # MSVC
 *.pdb
