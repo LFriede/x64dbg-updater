@@ -37,16 +37,23 @@ win32 {
 
     contains(QT_ARCH, i386) {
         QMAKE_POST_LINK += move $$PWD\release\x64dbg_updater.dll $$PWD\release\x64dbg_updater.dp32
-        QMAKE_LFLAGS += /PDB:release\x64dbg_updater.dp32.pdb
+        QMAKE_LFLAGS += /PDB:$$PWD\release\x64dbg_updater.dp32.pdb
     } else {
         QMAKE_POST_LINK += move $$PWD\release\x64dbg_updater.dll $$PWD\release\x64dbg_updater.dp64
-        QMAKE_LFLAGS += /PDB:release\x64dbg_updater.dp64.pdb
+        QMAKE_LFLAGS += /PDB:$$PWD\release\x64dbg_updater.dp64.pdb
     }
 }
 
 # for debug purposes create pdb file for release build
 QMAKE_CXXFLAGS += /Zi
 QMAKE_LFLAGS += /INCREMENTAL:NO /DEBUG /Profile
+# by specifying OBJECTS_DIR we don't have to rebuild all if we change arch (with "shadow build" disabled)
+OBJECTS_DIR = out_$$QT_ARCH
+# with this line pluginsdk libs will be found with or without "shadow build" enabled
+LIBS += -L"$$PWD"
+# this makes sure that "deploy.bat" finds the binarys if "shadow build" is enabled (qt default)
+DESTDIR = "$$PWD/release"
+
 
 FORMS += \
     updateform.ui
