@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QtNetwork/QNetworkReply>
 #include <QFile>
+#include <QtWidgets>
 
 #include "Windows.h"
 
@@ -19,10 +20,12 @@ UpdateForm::UpdateForm(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(":/icons/images/update.png"));
-    setWindowFlags(Qt::Dialog);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    ui->trwCommits->setHeaderLabel("Latest commits");
+
     autoUpdateFlag = false;
+    foundCommitDate = false;
 
     manager = new QNetworkAccessManager(this);
 }
@@ -88,6 +91,8 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
 
     json_t *json = NULL;
 
+    ui->trwCommits->clear();
+
     try {
         if(reply->error() != QNetworkReply::NoError) {
             throw EXCEPTION_NETWORK;
@@ -100,36 +105,65 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
 
         if (!json_is_array(json)) { throw EXCEPTION_JSON; }
 
-        json_t *commit;
-        commit = json_array_get(json, 0);
-        if (!json_is_object(commit)) { throw EXCEPTION_JSON; }
+        QDate lastDate = QDate();
+        QString latestCommitHash;
+        QTreeWidgetItem *treeRoot = nullptr;
+        for (size_t i = 0; i < json_array_size(json); i++) {
+            json_t *commit;
+            commit = json_array_get(json, i);
+            if (!json_is_object(commit)) { throw EXCEPTION_JSON; }
 
-        json_t *commithash;
-        commithash = json_object_get(commit, "sha");
-        if (!json_is_string(commithash)) { throw EXCEPTION_JSON; }
-        QString sCommithash = QString(json_string_value(commithash));
+            json_t *commithash;
+            commithash = json_object_get(commit, "sha");
+            if (!json_is_string(commithash)) { throw EXCEPTION_JSON; }
+            QString sCommitHash = json_string_value(commithash);
 
 
-        json_t *commit_;
-        commit_ = json_object_get(commit, "commit");
-        if (!json_is_object(commit_)) { throw EXCEPTION_JSON; }
+            json_t *commit_;
+            commit_ = json_object_get(commit, "commit");
+            if (!json_is_object(commit_)) { throw EXCEPTION_JSON; }
 
-        json_t *author;
-        author = json_object_get(commit_, "author");
-        if (!json_is_object(author)) { throw EXCEPTION_JSON; }
+            json_t *message;
+            message = json_object_get(commit_, "message");
+            if (!json_is_string(message)) { throw EXCEPTION_JSON; }
+            QString sMessage = json_string_value(message);
 
-        json_t *date;
-        date = json_object_get(author, "date");
-        if (!json_is_string(date)) { throw EXCEPTION_JSON; }
-        QDateTime datetime = QDateTime::fromString(json_string_value(date), Qt::ISODate);
+            json_t *author;
+            author = json_object_get(commit_, "author");
+            if (!json_is_object(author)) { throw EXCEPTION_JSON; }
 
-        ui->lblLatestVersion->setText("Latest commit:\t" + sCommithash.left(7) + " - " + datetime.toLocalTime().toString());
+            json_t *date;
+            date = json_object_get(author, "date");
+            if (!json_is_string(date)) { throw EXCEPTION_JSON; }
+            QDateTime datetime = QDateTime::fromString(json_string_value(date), Qt::ISODate);
+
+            if (lastDate != datetime.date()) {
+                lastDate = datetime.date();
+                treeRoot = new QTreeWidgetItem(ui->trwCommits);
+                treeRoot->setText(0, lastDate.toString());
+                treeRoot->setExpanded(true);
+            }
+
+            QTreeWidgetItem *treeItem = new QTreeWidgetItem();
+            treeItem->setText(0, sMessage);
+            if (sCommitHash == currentCommitHash) {
+                treeItem->setBackgroundColor(0, QColor(153, 217, 234));
+                ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7) + " - " + datetime.toLocalTime().toString());
+                foundCommitDate = true;
+            }
+            treeRoot->addChild(treeItem);
+
+            if (i == 0) {
+                latestCommitHash = sCommitHash;
+                ui->lblLatestVersion->setText("Latest commit:\t" + sCommitHash.left(7) + " - " + datetime.toLocalTime().toString());
+            }
+        }
 
         json_decref(json);
 
 
         if (autoUpdateFlag) {
-            if (sCommithash != currentCommitHash) {
+            if (latestCommitHash != currentCommitHash) {
                 _plugin_logputs("x64dbg Updater: autoCheck found new commits.");
                 show();
             } else {
@@ -232,7 +266,9 @@ void UpdateForm::replyFinished_releases(QNetworkReply *reply) {
 }
 
 void UpdateForm::showEvent(QShowEvent *event) {
-    ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7));
+    if (!foundCommitDate) {
+        ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7));
+    }
 
     if (autoUpdateFlag == false) {
         checkUpdate(false);

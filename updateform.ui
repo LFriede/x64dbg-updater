@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>175</height>
+    <width>525</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,41 @@
     </spacer>
    </item>
    <item>
+    <widget class="QTreeWidget" name="trwCommits">
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Show latest &lt;a href=&quot;https://github.com/x64dbg/x64dbg/commits&quot;&gt;commits&lt;/a&gt; on GitHub.</string>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="enabled">
       <bool>false</bool>
@@ -60,29 +95,6 @@
       <string>Status:</string>
      </property>
     </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Show latest &lt;a href=&quot;https://github.com/x64dbg/x64dbg/commits&quot;&gt;commits&lt;/a&gt; on GitHub.</string>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item>
     <widget class="QPushButton" name="applyButton">

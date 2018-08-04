@@ -34,6 +34,7 @@ private:
     bool autoUpdateFlag;
     QFile dlFile;
     int dlSize;
+    bool foundCommitDate;
     QNetworkAccessManager *manager;
     QNetworkReply *dlReply;
     QString updateUrl;
