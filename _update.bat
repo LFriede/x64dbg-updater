@@ -1,3 +1,12 @@
+@echo off
+if "%2" neq "x32" (
+    if "%2" neq "x64" (
+        echo This script is meant to be executed by the updater plugin. Please don't try to invoke it by hand.
+        pause > nul
+        exit
+    )
+)
+
 :start
 @echo off
 color 0c
