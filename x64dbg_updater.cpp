@@ -27,7 +27,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
     switch(info->hEntry)
     {
         case MENU_ABOUT: {
-            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v0.1", "Plugin written by:<br>gORDon_vdLg<br><br>Website:<br><a href=\"https://github.com/LFriede/x64dbg-updater\">github.com/LFriede/x64dbg-updater</a><br><br>Build:<br>"+QString(__DATE__));
+            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v0.2", "Plugin written by:<br>gORDon_vdLg<br><br>Website:<br><a href=\"https://github.com/LFriede/x64dbg-updater\">github.com/LFriede/x64dbg-updater</a><br><br>Build:<br>"+QString(__DATE__));
             msg.setWindowIcon(QIcon(":/icons/images/information.png"));
             msg.exec();
             break;
