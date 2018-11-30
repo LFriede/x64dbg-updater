@@ -128,12 +128,12 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
             if (!json_is_string(message)) { throw EXCEPTION_JSON; }
             QString sMessage = json_string_value(message);
 
-            json_t *author;
-            author = json_object_get(commit_, "author");
-            if (!json_is_object(author)) { throw EXCEPTION_JSON; }
+            json_t *committer;
+            committer = json_object_get(commit_, "committer");
+            if (!json_is_object(committer)) { throw EXCEPTION_JSON; }
 
             json_t *date;
-            date = json_object_get(author, "date");
+            date = json_object_get(committer, "date");
             if (!json_is_string(date)) { throw EXCEPTION_JSON; }
             QDateTime datetime = QDateTime::fromString(json_string_value(date), Qt::ISODate);
 
