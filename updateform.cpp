@@ -108,6 +108,7 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
         QDate lastDate = QDate();
         QString latestCommitHash;
         QTreeWidgetItem *treeRoot = nullptr;
+        bool alternatingFlag = false;
         for (size_t i = 0; i < json_array_size(json); i++) {
             json_t *commit;
             commit = json_array_get(json, i);
@@ -147,9 +148,16 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
             QTreeWidgetItem *treeItem = new QTreeWidgetItem();
             treeItem->setText(0, sMessage);
             if (sCommitHash == currentCommitHash) {
-                treeItem->setBackgroundColor(0, QColor(153, 217, 234));
+                treeItem->setBackgroundColor(0, QColor(255, 128, 64));
                 ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7) + " - " + datetime.toLocalTime().toString());
                 foundCommitDate = true;
+            } else {
+                if (alternatingFlag) {
+                    treeItem->setBackgroundColor(0, QColor(153, 217, 234));
+                } else {
+                    treeItem->setBackgroundColor(0, QColor(213, 240, 247));
+                }
+                alternatingFlag = !alternatingFlag;
             }
             treeRoot->addChild(treeItem);
 
