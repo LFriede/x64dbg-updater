@@ -46,6 +46,9 @@
    </item>
    <item>
     <widget class="QTreeWidget" name="trwCommits">
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
      <column>
       <property name="text">
        <string notr="true">1</string>
