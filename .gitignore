@@ -13,5 +13,5 @@ out_*/
 *.pdb
 
 # Other
-binaries_*.zip
-pdb_symbols_*.zip
+*.x64dbg.zip
+*.x64dbg.zip.json

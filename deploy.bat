@@ -1,20 +1,16 @@
 @echo off
 
-rem get current date and time to %fullstamp%
-rem https://stackoverflow.com/questions/19131029/how-to-get-date-in-bat-file/19131662#19131662
+set "version=0.3"
 
-for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
-set "YY=%dt:~2,2%" & set "YYYY=%dt:~0,4%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,2%"
-set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "Sec=%dt:~12,2%"
 
-set "fullstamp=%YYYY%-%MM%-%DD%_%HH%-%Min%"
-set "binname=binaries_%fullstamp%.zip"
-set "dbgname=pdb_symbols_%fullstamp%.zip"
+mkdir release\pluginroot\x32\plugins
+mkdir release\pluginroot\x64\plugins
 
-rem pack and rename in archive
-_res\7za.exe a -tzip %binname% .\_res\7za.exe .\_res\License_7zip.txt .\release\x64dbg_updater.dp32 .\release\x64dbg_updater.dp64 README.md _update.bat
-_res\7za.exe rn %binname% x64dbg_updater.dp32 release\x32\plugins\x64dbg_updater.dp32 x64dbg_updater.dp64 release\x64\plugins\x64dbg_updater.dp64 README.md README_updater.md
+copy release\x64dbg_updater.dp32 release\pluginroot\x32\plugins\
+copy release\x64dbg_updater.dp64 release\pluginroot\x64\plugins\
+copy _update.bat release\pluginroot
+copy README.md release\pluginroot\README_updater.md
 
-_res\7za.exe a -tzip %dbgname% .\release\x64dbg_updater.dp32.pdb .\release\x64dbg_updater.dp64.pdb README.md
-_res\7za.exe rn %dbgname% x64dbg_updater.dp32.pdb release\x32\plugins\x64dbg_updater.dp32.pdb x64dbg_updater.dp64.pdb release\x64\plugins\x64dbg_updater.dp64.pdb README.md README_updater.md
+x64plgmnrc.exe --createplugin x64dbg_updater --setrootpath release\pluginroot --setname x64dbg_updater --setversion %version% --setauthor gORDon_vdLg --setbugreport "https://github.com/LFriede/x64dbg-updater/issues" --setinfo "Automatic update checks with the plugin manager on x64dbg startup."
+
 pause
