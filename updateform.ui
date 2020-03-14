@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>525</width>
-    <height>372</height>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,16 +83,6 @@
     </spacer>
    </item>
    <item>
-    <widget class="QProgressBar" name="progressBar">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="value">
-      <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="lblProgress">
      <property name="text">
       <string>Status:</string>
@@ -100,12 +90,54 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="applyButton">
-     <property name="enabled">
+    <widget class="QPlainTextEdit" name="pteUpdaterConsole">
+     <property name="font">
+      <font>
+       <family>Consolas</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="readOnly">
       <bool>true</bool>
      </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pbUpdateOnExit">
+       <property name="text">
+        <string>Update all on exit</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pbShowPluginManager">
+       <property name="text">
+        <string>Show Plugin Manager GUI</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pbUpdateAll">
+       <property name="text">
+        <string>Close x64dbg, update all, restart x64dbg</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pbNothing">
+       <property name="text">
+        <string>Do nothing</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblHint">
      <property name="text">
-      <string>Apply update</string>
+      <string>Hint: The &quot;update on exit&quot; flag will be reset if you select one of the other options.</string>
      </property>
     </widget>
    </item>

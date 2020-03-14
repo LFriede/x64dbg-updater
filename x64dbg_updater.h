@@ -10,4 +10,6 @@
 #define PLUGIN_NAME "x64dbg Updater"
 #define PLUGIN_VERSION 1
 
+void updateAll(bool restart);
+
 #endif // X64DBG_UPDATER_H

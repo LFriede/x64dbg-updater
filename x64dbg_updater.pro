@@ -23,10 +23,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    settingsform.cpp \
         x64dbg_updater.cpp \
     updateform.cpp
 
 HEADERS += \
+        settingsform.h \
         x64dbg_updater.h \
         x64dbg_updater_global.h \ 
     pluginmain.h \
@@ -56,6 +58,7 @@ DESTDIR = "$$PWD/release"
 
 
 FORMS += \
+    settingsform.ui \
     updateform.ui
 
 DISTFILES += \

@@ -21,23 +21,21 @@ public:
     ~UpdateForm();
 
 public slots:
-    void downloadFinished(QNetworkReply *reply);
-    void downloadReadyRead();
     void replyFinished_commits(QNetworkReply *reply);
-    void replyFinished_releases(QNetworkReply *reply);
+    void updaterFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private slots:
-    void on_applyButton_clicked();
+    void on_pbNothing_clicked();
+    void on_pbShowPluginManager_clicked();
+    void on_pbUpdateAll_clicked();
+    void on_pbUpdateOnExit_clicked();
 
 private:
     Ui::UpdateForm *ui;
     bool autoUpdateFlag;
-    QFile dlFile;
-    int dlSize;
     bool foundCommitDate;
     QNetworkAccessManager *manager;
-    QNetworkReply *dlReply;
-    QString updateUrl;
+    QProcess *updaterProcess;
     void showEvent(QShowEvent* event);
 };
 

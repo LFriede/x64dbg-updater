@@ -7,6 +7,7 @@ debug/
 *.pro.user
 ui_*.h
 out_*/
+.qmake.stash
 
 # MSVC
 *.pdb
