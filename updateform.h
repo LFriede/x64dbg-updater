@@ -17,12 +17,13 @@ public:
     QString currentCommitHash;
     QString updaterPath;
     explicit UpdateForm(QWidget *parent = 0);
-    void checkUpdate(bool autoUpdate);
+    void checkUpdate();
     ~UpdateForm();
 
 public slots:
     void replyFinished_commits(QNetworkReply *reply);
-    void updaterFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void plgmgrUpdateServerListFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private slots:
     void on_pbNothing_clicked();

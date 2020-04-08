@@ -67,7 +67,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
         }
 
         case MENU_CHECKUPDATE: {
-            myDlg->checkUpdate(false);
+            myDlg->checkUpdate();
             myDlg->show();
             break;
         }
@@ -166,7 +166,6 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     if (!GetModuleFileNameW(NULL, path, MAX_PATH)) { return; }
 
     QString upath = QString::fromWCharArray(path);
-    //upath = upath.left(upath.lastIndexOf('\\'));
     upath = upath.left(upath.lastIndexOf('\\'));
     upath = upath.left(upath.lastIndexOf('\\')+1);
     updaterPath = upath;
@@ -196,6 +195,6 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
 
 
     if (globalSettings.autoCheck) {
-        myDlg->checkUpdate(true);
+        myDlg->checkUpdate();
     }
 }

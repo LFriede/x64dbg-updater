@@ -14,6 +14,33 @@
 #define EXCEPTION_NETWORK 0
 #define EXCEPTION_JSON 1
 
+
+// Pluginmanager: console_source\main_console.cpp
+enum PLGMNGREXITCODE
+{
+    PLGMNGREXITCODE_NOARGS=0,
+    PLGMNGREXITCODE_ERROR,
+    PLGMNGREXITCODE_DATAERROR,
+    PLGMNGREXITCODE_INSTALLFILES,
+    PLGMNGREXITCODE_INSTALLPLUGINS,
+    PLGMNGREXITCODE_LISTNAMEISEMPTY,
+    PLGMNGREXITCODE_NOINPUTFILES,
+    PLGMNGREXITCODE_NOPLUGINSINSTALLED,
+    PLGMNGREXITCODE_PLUGINCREATED,
+    PLGMNGREXITCODE_CANNOTCREATESERVERLIST,
+    PLGMNGREXITCODE_SHOWSERVERLIST,
+    PLGMNGREXITCODE_SERVERLISTCREATED,
+    PLGMNGREXITCODE_SERVERLISTISEMPTY,
+    PLGMNGREXITCODE_SERVERLISTUPDATED,
+    PLGMNGREXITCODE_SHOWINSTALLED,
+    PLGMNGREXITCODE_SHOWUPDATES,
+    PLGMNGREXITCODE_UPDATEALL,
+    PLGMNGREXITCODE_UPDATEPLUGINS,
+    PLGMNGREXITCODE_REMOVEPLUGINS,
+    PLGMNGREXITCODE_NOUPDATESAVAILABLE,
+};
+
+
 UpdateForm::UpdateForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::UpdateForm)
@@ -29,20 +56,17 @@ UpdateForm::UpdateForm(QWidget *parent) :
     p.setColor(QPalette::Text, QColor(0xCC, 0xCC, 0xCC));
     ui->pteUpdaterConsole->setPalette(p);
 
-    autoUpdateFlag = false;
     foundCommitDate = false;
 
     manager = new QNetworkAccessManager(this);
     updaterProcess = new QProcess;
 }
 
-void UpdateForm::checkUpdate(bool autoUpdate) {
-    autoUpdateFlag = autoUpdate;
-
-    // Let PluginManager check for updates
-    connect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(updaterFinished(int, QProcess::ExitStatus)));
-    updaterProcess->start(("\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append("\" --showupdates")).toStdString().c_str());
-
+void UpdateForm::checkUpdate() {
+    // Let PluginManager update the server list
+    disconnect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), 0, 0);
+    connect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(plgmgrUpdateServerListFinished(int, QProcess::ExitStatus)));
+    updaterProcess->start(("\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append("\" --updateserverlist")).toStdString().c_str());
 
     // Get list of commits from GitHub
     disconnect(manager, SIGNAL(finished(QNetworkReply*)), 0, 0);
@@ -50,19 +74,24 @@ void UpdateForm::checkUpdate(bool autoUpdate) {
     manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/x64dbg/x64dbg/commits")));
 }
 
-void UpdateForm::updaterFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+void UpdateForm::plgmgrUpdateServerListFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+    // Server list is updated, check for updates
+    disconnect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), 0, 0);
+    connect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(plgmgrShowUpdatesFinished(int, QProcess::ExitStatus)));
+    updaterProcess->start(("\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append("\" --showupdates")).toStdString().c_str());
+}
+
+void UpdateForm::plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus exitStatus) {
     QString s = updaterProcess->readAllStandardOutput();
-    if (autoUpdateFlag) {
-        if (s != "No updates available.\x0d\x0a") {
-            ui->lblProgress->setText("Status: PluginManager found new updates.");
-            _plugin_logputs("x64dbg Updater: PluginManager found new updates.");
-            show();
-        } else {
-            ui->lblProgress->setText("Status: PluginManager found no new updates.");
-            _plugin_logputs("x64dbg Updater: PluginManager found no new updates.");
-        }
+
+    if (exitCode == PLGMNGREXITCODE_SHOWUPDATES) {
+        ui->lblProgress->setText("Status: PluginManager found new updates.");
+        _plugin_logputs("x64dbg Updater: PluginManager found new updates.");
+        show();
+    } else {
+        ui->lblProgress->setText("Status: PluginManager found no new updates.");
+        _plugin_logputs("x64dbg Updater: PluginManager found no new updates.");
     }
-    autoUpdateFlag = false;
 
     s = "> x64plgmnrc.exe --showupdates\x0d\x0a\x0d\x0a" + s;
     ui->pteUpdaterConsole->setPlainText(s);
@@ -179,6 +208,7 @@ void UpdateForm::showEvent(QShowEvent *event) {
 UpdateForm::~UpdateForm() {
     delete ui;
     delete manager;
+    delete updaterProcess;
 }
 
 void UpdateForm::on_pbNothing_clicked()
