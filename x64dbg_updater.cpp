@@ -39,7 +39,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
     switch(info->hEntry)
     {
         case MENU_ABOUT: {
-            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v0.2",
+            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v0.3",
                 "x64dbg Updater plugin written by:<br>gORDon_vdLg<br>"
                 "<br>"
                 "Website:<br>"
@@ -140,7 +140,7 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
         iconf.close();
     }
 
-    _plugin_menuaddentry(hMenu, MENU_SETTINGS, "Settings");
+    _plugin_menuaddentry(hMenu, MENU_SETTINGS, "Settings...");
     iconf.setFileName(":/icons/images/settings.png");
     if (iconf.open(QIODevice::ReadOnly)) {
         QByteArray arr = iconf.readAll();

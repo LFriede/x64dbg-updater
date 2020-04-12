@@ -62,6 +62,7 @@ FORMS += \
     updateform.ui
 
 DISTFILES += \
+    CHANGELOG.md \
     _update.bat \
     .gitignore \
     README.md \
