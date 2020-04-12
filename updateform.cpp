@@ -56,6 +56,12 @@ UpdateForm::UpdateForm(QWidget *parent) :
     p.setColor(QPalette::Text, QColor(0xCC, 0xCC, 0xCC));
     ui->pteUpdaterConsole->setPalette(p);
 
+    // Setting the font(family) in the designer makes us crash after plugin unload O_o
+    QFont font;
+    font.setFamily("Consolas");
+    font.setPointSize(10);
+    ui->pteUpdaterConsole->setFont(font);
+
     foundCommitDate = false;
 
     manager = new QNetworkAccessManager(this);
