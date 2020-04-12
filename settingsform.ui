@@ -7,19 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>167</height>
+    <height>270</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>167</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>400</width>
-    <height>167</height>
+    <height>270</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,6 +25,57 @@
      <property name="text">
       <string>Autocheck for updates on startup</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="grpPause">
+     <property name="title">
+      <string>Minimum timespan between automatic update checks</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QSpinBox" name="spinDelay">
+        <property name="value">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="rbHours">
+          <property name="text">
+           <string>Hours</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbDays">
+          <property name="text">
+           <string>Days</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbWeeks">
+          <property name="text">
+           <string>Weeks</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblTimeHint">
+        <property name="text">
+         <string>Enter zero to check on every startup.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

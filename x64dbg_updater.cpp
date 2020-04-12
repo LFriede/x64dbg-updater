@@ -31,9 +31,6 @@ void updateAll(bool restart) {
     QString param = "\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append(ArchValue("\" x32 ", "\" x64 ") + QString::number(restart));
 
     ShellExecuteW(0, L"open", (updaterPath + "_update.bat").toStdWString().c_str(), param.toStdWString().c_str(), updaterPath.toStdWString().c_str(), SW_SHOWDEFAULT);
-    _plugin_logputs((updaterPath + "_update.bat").toStdString().c_str());
-    _plugin_logputs(param.toStdString().c_str());
-    _plugin_logputs(updaterPath.toStdString().c_str());
 }
 
 
@@ -116,11 +113,15 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     myDlg = new UpdateForm();
     settingsDlg = new SettingsForm();
 
+    BridgeSettingGetUint("UpdaterPlugin", "DelayTimestamp", &globalSettings.updateDelayTimestamp);
+
     // Show settings dialog to user if there is something to configure first
-    duint chk = 0;
+    duint chk = 1;
     if (
         BridgeSettingGetUint("UpdaterPlugin", "AutocheckOnStartup", &chk) == false ||
-        BridgeSettingGet("UpdaterPlugin", "PluginManagerPath", globalSettings.managerPath) == false
+        BridgeSettingGet("UpdaterPlugin", "PluginManagerPath", globalSettings.managerPath) == false ||
+        BridgeSettingGetUint("UpdaterPlugin", "DelayValue", &globalSettings.updateDelayValue) == false ||
+        BridgeSettingGetUint("UpdaterPlugin", "DelayFactor", &globalSettings.updateDelayFactor) == false
     ) {
         globalSettings.autoCheck = chk == 1;
         settingsDlg->show();
@@ -193,8 +194,28 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
 
     myDlg->currentCommitHash = commithash;
 
-
     if (globalSettings.autoCheck) {
-        myDlg->checkUpdate();
+        QDateTime testTime;
+        testTime.setTime_t(globalSettings.updateDelayTimestamp);
+        switch (globalSettings.updateDelayFactor) {
+            case 0: {
+                testTime = testTime.addSecs(globalSettings.updateDelayValue * 60 * 60);
+                break;
+            }
+            case 1: {
+                testTime = testTime.addDays(globalSettings.updateDelayValue);
+                break;
+            }
+            case 2: {
+                testTime = testTime.addDays(globalSettings.updateDelayValue * 7);
+                break;
+            }
+        }
+
+        if (QDateTime::currentDateTimeUtc() > testTime) {
+            myDlg->checkUpdate();
+        } else {
+            _plugin_logputs((QString("x64dbg Updater: Autocheck delayed until -> ") + testTime.toString(Qt::SystemLocaleShortDate)).toStdString().c_str());
+        }
     }
 }

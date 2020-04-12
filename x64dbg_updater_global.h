@@ -21,6 +21,9 @@ struct MY_PLUGIN_SETTINGS {
     bool autoCheck = false;
     char managerPath[MAX_SETTING_SIZE];
     bool updateOnExit = false;
+    duint updateDelayValue = 1;
+    duint updateDelayFactor = 1;          // 0 = hours, 1 = days, 2 = weeks
+    duint updateDelayTimestamp = 0;
 };
 extern MY_PLUGIN_SETTINGS globalSettings;
 

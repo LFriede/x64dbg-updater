@@ -59,10 +59,14 @@ UpdateForm::UpdateForm(QWidget *parent) :
     foundCommitDate = false;
 
     manager = new QNetworkAccessManager(this);
-    updaterProcess = new QProcess;
+    updaterProcess = new QProcess(this);
 }
 
 void UpdateForm::checkUpdate() {
+    // Save the date ;)
+    globalSettings.updateDelayTimestamp = QDateTime::currentDateTimeUtc().toTime_t();
+    BridgeSettingSetUint("UpdaterPlugin", "DelayTimestamp", globalSettings.updateDelayTimestamp);
+
     // Let PluginManager update the server list
     disconnect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), 0, 0);
     connect(updaterProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(plgmgrUpdateServerListFinished(int, QProcess::ExitStatus)));
