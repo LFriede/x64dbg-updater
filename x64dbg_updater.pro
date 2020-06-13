@@ -63,7 +63,6 @@ FORMS += \
 
 DISTFILES += \
     CHANGELOG.md \
-    _update.bat \
     .gitignore \
     README.md \
     deploy.bat

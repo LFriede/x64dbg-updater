@@ -28,9 +28,15 @@ MY_PLUGIN_SETTINGS globalSettings;
 
 
 void updateAll(bool restart) {
-    QString param = "\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append(ArchValue("\" x32 ", "\" x64 ") + QString::number(restart));
+    QString param = "/C \"\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe") + "\" --updateall";
 
-    ShellExecuteW(0, L"open", (updaterPath + "_update.bat").toStdWString().c_str(), param.toStdWString().c_str(), updaterPath.toStdWString().c_str(), SW_SHOWDEFAULT);
+    if (restart) {
+        param += " & start \"\" \"" ArchValue("x32", "x64") "\\" ArchValue("x32", "x64") "dbg.exe\"";
+    }
+
+    param += " & pause\"";
+
+    ShellExecuteW(0, L"open", L"cmd.exe", param.toStdWString().c_str(), updaterPath.toStdWString().c_str(), SW_SHOWDEFAULT);
 }
 
 

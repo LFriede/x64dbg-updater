@@ -1,6 +1,10 @@
 # x64dbg Updater Changelog
 
 
+## 0.4
+ - Removed `_update.bat`.
+
+
 ## 0.3
 
  - Now checks for updates by invoking the [Plugin Manager](https://github.com/horsicq/x64dbg-Plugin-Manager) by Horsicq.
