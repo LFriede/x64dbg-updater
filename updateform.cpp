@@ -64,6 +64,8 @@ UpdateForm::UpdateForm(QWidget *parent) :
 
     foundCommitDate = false;
 
+    ui->pbUpdateOnExit->setChecked(globalSettings.updateOnExit);
+
     manager = new QNetworkAccessManager(this);
     updaterProcess = new QProcess(this);
 }
@@ -223,29 +225,33 @@ UpdateForm::~UpdateForm() {
 
 void UpdateForm::on_pbShowPluginManager_clicked()
 {
-    globalSettings.updateOnExit = false;
+    updateOnExit(false);
     ShellExecuteW(0, L"open", QDir(globalSettings.managerPath).filePath("x64plgmnr.exe").toStdWString().c_str(), NULL, NULL, SW_SHOWNORMAL);
     close();
 }
 
 void UpdateForm::on_pbUpdateAll_clicked()
 {
-    globalSettings.updateOnExit = false;
+    updateOnExit(false);
     updateAll(true);
 
     PostMessage(hwndDlg, WM_CLOSE, 0, 0);
     close();
 }
 
+void UpdateForm::updateOnExit(bool enabled) {
+    globalSettings.updateOnExit = enabled;
+    ui->pbUpdateOnExit->setChecked(enabled);
+}
+
 void UpdateForm::on_pbUpdateOnExit_clicked()
 {
-    globalSettings.updateOnExit = true;
-    close();
+    globalSettings.updateOnExit = !globalSettings.updateOnExit;
 }
 
 void UpdateForm::on_pbForceCoreUpdate_clicked()
 {
-    globalSettings.updateOnExit = false;
+    updateOnExit(false);
     forceUpdate();
 
     PostMessage(hwndDlg, WM_CLOSE, 0, 0);

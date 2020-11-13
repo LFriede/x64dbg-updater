@@ -37,6 +37,7 @@ private:
     QNetworkAccessManager *manager;
     QProcess *updaterProcess;
     void showEvent(QShowEvent* event);
+    void updateOnExit(bool enabled);
 };
 
 #endif // UPDATEFORM_H
