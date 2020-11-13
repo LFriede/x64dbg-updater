@@ -57,7 +57,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="lblCommits">
      <property name="text">
       <string>Show latest &lt;a href=&quot;https://github.com/x64dbg/x64dbg/commits&quot;&gt;commits&lt;/a&gt; on GitHub.</string>
      </property>

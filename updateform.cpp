@@ -116,6 +116,13 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
     json_t *json = NULL;
 
     ui->trwCommits->clear();
+    char theme[MAX_SETTING_SIZE];
+    bool darkMode = false;
+    if (BridgeSettingGet("Theme", "Selected", theme) == true) {
+        if (strcmp(theme, "Dark") == 0) {
+            darkMode = true;
+        }
+    }
 
     try {
         if(reply->error() != QNetworkReply::NoError) {
@@ -177,9 +184,17 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
                 foundCommitDate = true;
             } else {
                 if (alternatingFlag) {
-                    treeItem->setBackgroundColor(0, QColor(153, 217, 234));
+                    if (darkMode) {
+                        treeItem->setBackgroundColor(0, QColor(137, 162, 246));
+                    } else {
+                        treeItem->setBackgroundColor(0, QColor(153, 217, 234));
+                    }
                 } else {
-                    treeItem->setBackgroundColor(0, QColor(213, 240, 247));
+                    if (darkMode) {
+                        treeItem->setBackgroundColor(0, QColor(132, 107, 244));
+                    } else {
+                        treeItem->setBackgroundColor(0, QColor(213, 240, 247));
+                    }
                 }
                 alternatingFlag = !alternatingFlag;
             }
@@ -215,6 +230,8 @@ void UpdateForm::showEvent(QShowEvent *event) {
     if (!foundCommitDate) {
         ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7));
     }
+
+
 }
 
 UpdateForm::~UpdateForm() {

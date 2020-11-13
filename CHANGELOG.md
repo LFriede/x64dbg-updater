@@ -3,6 +3,8 @@
 
 ## 0.4
  - Removed `_update.bat`.
+ - Added option to force core update
+ - Better colors for dark theme
 
 
 ## 0.3
