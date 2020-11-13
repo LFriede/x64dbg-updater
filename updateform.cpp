@@ -221,12 +221,6 @@ UpdateForm::~UpdateForm() {
     delete updaterProcess;
 }
 
-void UpdateForm::on_pbNothing_clicked()
-{
-    globalSettings.updateOnExit = false;
-    close();
-}
-
 void UpdateForm::on_pbShowPluginManager_clicked()
 {
     globalSettings.updateOnExit = false;
@@ -246,5 +240,14 @@ void UpdateForm::on_pbUpdateAll_clicked()
 void UpdateForm::on_pbUpdateOnExit_clicked()
 {
     globalSettings.updateOnExit = true;
+    close();
+}
+
+void UpdateForm::on_pbForceCoreUpdate_clicked()
+{
+    globalSettings.updateOnExit = false;
+    forceUpdate();
+
+    PostMessage(hwndDlg, WM_CLOSE, 0, 0);
     close();
 }

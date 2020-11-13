@@ -11,5 +11,6 @@
 #define PLUGIN_VERSION 1
 
 void updateAll(bool restart);
+void forceUpdate();
 
 #endif // X64DBG_UPDATER_H

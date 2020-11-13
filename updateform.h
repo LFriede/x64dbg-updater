@@ -15,7 +15,6 @@ class UpdateForm : public QWidget
 
 public:
     QString currentCommitHash;
-    QString updaterPath;
     explicit UpdateForm(QWidget *parent = 0);
     void checkUpdate();
     ~UpdateForm();
@@ -26,10 +25,10 @@ public slots:
     void plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private slots:
-    void on_pbNothing_clicked();
     void on_pbShowPluginManager_clicked();
     void on_pbUpdateAll_clicked();
     void on_pbUpdateOnExit_clicked();
+    void on_pbForceCoreUpdate_clicked();
 
 private:
     Ui::UpdateForm *ui;

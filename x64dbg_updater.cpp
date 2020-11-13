@@ -39,6 +39,20 @@ void updateAll(bool restart) {
     ShellExecuteW(0, L"open", L"cmd.exe", param.toStdWString().c_str(), updaterPath.toStdWString().c_str(), SW_SHOWDEFAULT);
 }
 
+void forceUpdate() {
+    // Wait for debugger to close
+    QString param = "/C \"timeout /t 5";
+    // Uninstall core
+    param += " & \"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe") + "\" --removeplugin x64core";
+    // Reinstall core
+    param += " & \"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe") + "\" --installplugin x64core";
+    // Restart x64dbg
+    param += " & start \"\" \"" ArchValue("x32", "x64") "\\" ArchValue("x32", "x64") "dbg.exe\"";
+    param += " & pause\"";
+
+    ShellExecuteW(0, L"open", L"cmd.exe", param.toStdWString().c_str(), updaterPath.toStdWString().c_str(), SW_SHOWDEFAULT);
+}
+
 
 PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 {
