@@ -56,6 +56,9 @@ LIBS += -L"$$PWD"
 # this makes sure that "deploy.bat" finds the binarys if "shadow build" is enabled (qt default)
 DESTDIR = "$$PWD/release"
 
+# Let "build_version" set %MY_BUILD_VERSION% env var and add to defines
+DEFINES += MY_BUILD_VERSION=\\\"$$system($$PWD\build_version.bat)\\\"
+
 
 FORMS += \
     settingsform.ui \
@@ -65,4 +68,5 @@ DISTFILES += \
     CHANGELOG.md \
     .gitignore \
     README.md \
+    build_version.bat \
     deploy.bat

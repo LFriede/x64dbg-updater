@@ -59,7 +59,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
     switch(info->hEntry)
     {
         case MENU_ABOUT: {
-            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v0.3",
+            QMessageBox msg(QMessageBox::Information, "About x64dbg Updater v" MY_BUILD_VERSION,
                 "x64dbg Updater plugin written by:<br>gORDon_vdLg<br>"
                 "<br>"
                 "Website:<br>"
