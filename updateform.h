@@ -25,6 +25,7 @@ public slots:
     void replyFinished_commits(const unsigned long status, const QString content);
     void plgmgrUpdateServerListFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void updaterProcessError(QProcess::ProcessError error);
 
 private slots:
     void on_pbShowPluginManager_clicked();

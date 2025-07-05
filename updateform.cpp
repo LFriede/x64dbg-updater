@@ -66,6 +66,7 @@ UpdateForm::UpdateForm(QWidget *parent) :
     ui->pbUpdateOnExit->setChecked(globalSettings.updateOnExit);
 
     updaterProcess = new QProcess(this);
+    connect(updaterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SLOT(updaterProcessError(QProcess::ProcessError)));
 }
 
 void UpdateForm::checkUpdate() {
@@ -223,8 +224,11 @@ void UpdateForm::showEvent(QShowEvent *event) {
     if (!foundCommitDate) {
         ui->lblCurrentVersion->setText("Current commit:\t" + currentCommitHash.left(7));
     }
+}
 
-
+void UpdateForm::updaterProcessError(QProcess::ProcessError error) {
+    _plugin_logputs("x64dbg-updater error: Faild to start x64plgmnrc.exe");
+    ui->pteUpdaterConsole->setPlainText("Faild to start x64plgmnrc.exe");
 }
 
 UpdateForm::~UpdateForm() {
@@ -235,8 +239,16 @@ UpdateForm::~UpdateForm() {
 void UpdateForm::on_pbShowPluginManager_clicked()
 {
     updateOnExit(false);
-    ShellExecuteW(0, L"open", QDir(globalSettings.managerPath).filePath("x64plgmnr.exe").toStdWString().c_str(), NULL, NULL, SW_SHOWNORMAL);
-    close();
+    HINSTANCE res = ShellExecuteW(0, L"open", QDir(globalSettings.managerPath).filePath("x64plgmnr.exe").toStdWString().c_str(), NULL, NULL, SW_SHOWNORMAL);
+    if (res <= (HINSTANCE)32) {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Icon::Critical);
+        msgBox.setWindowIcon(msgBox.style()->standardIcon(QStyle::SP_MessageBoxCritical));
+        msgBox.setText("Unable to start x64plgmnr.exe, check path in settings.");
+        msgBox.exec();
+    } else {
+        close();
+    }
 }
 
 void UpdateForm::on_pbUpdateAll_clicked()
