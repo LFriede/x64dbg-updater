@@ -1,5 +1,4 @@
 #include <QMessageBox>
-#include <QtNetwork/QNetworkReply>
 #include <QFile>
 #include <QtWidgets>
 
@@ -8,10 +7,10 @@
 #include "x64dbg_updater.h"
 #include "updateform.h"
 #include "ui_updateform.h"
+#include "httpreq.h"
 
 #include "pluginmain.h"
 
-#define EXCEPTION_NETWORK 0
 #define EXCEPTION_JSON 1
 
 
@@ -66,7 +65,6 @@ UpdateForm::UpdateForm(QWidget *parent) :
 
     ui->pbUpdateOnExit->setChecked(globalSettings.updateOnExit);
 
-    manager = new QNetworkAccessManager(this);
     updaterProcess = new QProcess(this);
 }
 
@@ -81,9 +79,10 @@ void UpdateForm::checkUpdate() {
     updaterProcess->start(("\"" + QDir(globalSettings.managerPath).filePath("x64plgmnrc.exe").append("\" --updateserverlist")).toStdString().c_str());
 
     // Get list of commits from GitHub
-    disconnect(manager, SIGNAL(finished(QNetworkReply*)), 0, 0);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished_commits(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl("https://api.github.com/repos/x64dbg/x64dbg/commits")));
+    HttpReq *request = new HttpReq(this, "https://api.github.com/repos/x64dbg/x64dbg/commits");
+    connect(request, &HttpReq::resultReady, this, &UpdateForm::replyFinished_commits);
+    connect(request, &HttpReq::finished, request, &QObject::deleteLater); // autofree thread
+    request->start();
 }
 
 void UpdateForm::plgmgrUpdateServerListFinished(int exitCode, QProcess::ExitStatus exitStatus) {
@@ -110,8 +109,12 @@ void UpdateForm::plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus ex
 }
 
 
-void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
-    reply->deleteLater();
+void UpdateForm::replyFinished_commits(const unsigned long status, const QString content) {
+    // content contains error if status is not 200
+    if (status != 200) {
+        _plugin_logputs((QString("x64dbg Updater error: ") + content).toLocal8Bit().data());
+        return;
+    }
 
     json_t *json = NULL;
 
@@ -125,13 +128,8 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
     }
 
     try {
-        if(reply->error() != QNetworkReply::NoError) {
-            throw EXCEPTION_NETWORK;
-        }
-
         json_error_t error;
-        json = json_loads(reply->readAll().data(), 0, &error);
-        reply->deleteLater();
+        json = json_loads(content.toUtf8(), 0, &error);
         if (!json) { throw EXCEPTION_JSON; }
 
         if (!json_is_array(json)) { throw EXCEPTION_JSON; }
@@ -209,11 +207,6 @@ void UpdateForm::replyFinished_commits(QNetworkReply *reply) {
         json_decref(json);
     } catch (int e) {
         switch (e) {
-            case EXCEPTION_NETWORK: {
-                _plugin_logprint("x64dbg Updater: network error -> ");
-                _plugin_logputs(reply->errorString().toStdString().c_str());
-                break;
-            }
             case EXCEPTION_JSON: {
                 _plugin_logputs("x64dbg Updater: JSON error");
                 break;
@@ -236,7 +229,6 @@ void UpdateForm::showEvent(QShowEvent *event) {
 
 UpdateForm::~UpdateForm() {
     delete ui;
-    delete manager;
     delete updaterProcess;
 }
 

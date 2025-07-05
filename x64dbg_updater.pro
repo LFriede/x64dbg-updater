@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core widgets network
+QT       += core widgets
 
 TARGET = x64dbg_updater
 TEMPLATE = lib
@@ -23,11 +23,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    httpreq.cpp \
     settingsform.cpp \
         x64dbg_updater.cpp \
     updateform.cpp
 
 HEADERS += \
+        httpreq.h \
         settingsform.h \
         x64dbg_updater.h \
         x64dbg_updater_global.h \ 

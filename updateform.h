@@ -2,8 +2,10 @@
 #define UPDATEFORM_H
 
 #include <QWidget>
-#include <QtNetwork>
 #include <QFile>
+#include <QProcess>
+
+#include "Windows.h"
 
 namespace Ui {
 class UpdateForm;
@@ -20,7 +22,7 @@ public:
     ~UpdateForm();
 
 public slots:
-    void replyFinished_commits(QNetworkReply *reply);
+    void replyFinished_commits(const unsigned long status, const QString content);
     void plgmgrUpdateServerListFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void plgmgrShowUpdatesFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
@@ -34,7 +36,6 @@ private:
     Ui::UpdateForm *ui;
     bool autoUpdateFlag;
     bool foundCommitDate;
-    QNetworkAccessManager *manager;
     QProcess *updaterProcess;
     void showEvent(QShowEvent* event);
     void updateOnExit(bool enabled);

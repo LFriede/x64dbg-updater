@@ -3,6 +3,7 @@
 
 #pragma comment(lib, "Shell32.lib")
 #pragma comment(lib, "User32.lib")
+#pragma comment(lib, "Wininet.lib")
 
 #include "x64dbg_updater_global.h"
 #include "pluginmain.h"
