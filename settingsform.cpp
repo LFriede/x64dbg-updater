@@ -9,7 +9,7 @@ SettingsForm::SettingsForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowIcon(QIcon(":/icons/images/settings.png"));
+    setWindowIcon(QIcon(":/Default/icons/settings.png"));
     setWindowFlags(windowFlags() & ~Qt::WindowMaximized);
 }
 

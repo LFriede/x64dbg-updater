@@ -45,7 +45,7 @@ UpdateForm::UpdateForm(QWidget *parent) :
     ui(new Ui::UpdateForm)
 {
     ui->setupUi(this);
-    setWindowIcon(QIcon(":/icons/images/update.png"));
+    setWindowIcon(QIcon(":/Default/icons/update.png"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->trwCommits->setHeaderLabel("Latest commits");

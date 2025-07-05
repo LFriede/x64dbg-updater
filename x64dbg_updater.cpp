@@ -73,7 +73,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
                 "Website:<br>"
                 "<a href=\"https://github.com/horsicq/x64dbg-Plugin-Manager\">github.com/horsicq/x64dbg-Plugin-Manager</a>"
             );
-            msg.setWindowIcon(QIcon(":/icons/images/information.png"));
+            msg.setWindowIcon(QIcon(":/Default/icons/information.png"));
             msg.exec();
             break;
         }
@@ -149,7 +149,7 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     globalSettings.autoCheck = chk == 1;
 
     _plugin_menuaddentry(hMenu, MENU_CHECKUPDATE, "Search updates...");
-    QFile iconf(":/icons/images/update.png");
+    QFile iconf(":/Default/icons/update.png");
     if (iconf.open(QIODevice::ReadOnly)) {
         QByteArray arr = iconf.readAll();
         ICONDATA icond;
@@ -161,7 +161,7 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     }
 
     _plugin_menuaddentry(hMenu, MENU_SETTINGS, "Settings...");
-    iconf.setFileName(":/icons/images/settings.png");
+    iconf.setFileName(":/Default/icons/settings.png");
     if (iconf.open(QIODevice::ReadOnly)) {
         QByteArray arr = iconf.readAll();
         ICONDATA icond;
@@ -172,7 +172,7 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     }
 
     _plugin_menuaddentry(hMenu, MENU_ABOUT, "About...");
-    iconf.setFileName(":/icons/images/information.png");
+    iconf.setFileName(":/Default/icons/information.png");
     if (iconf.open(QIODevice::ReadOnly)) {
         QByteArray arr = iconf.readAll();
         ICONDATA icond;
