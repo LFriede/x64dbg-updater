@@ -2,14 +2,35 @@
 
 call build_version.bat
 
+set pluginroot=release\pluginroot\
 
-mkdir release\pluginroot\x32\plugins
-mkdir release\pluginroot\x64\plugins
+mkdir %pluginroot%x32\plugins
+mkdir %pluginroot%x64\plugins
 
-copy release\x64dbg_updater.dp32 release\pluginroot\x32\plugins\
-copy release\x64dbg_updater.dp64 release\pluginroot\x64\plugins\
-copy README.md release\pluginroot\README_updater.md
+call:copyfile release\x64dbg_updater.dp32 %pluginroot%x32\plugins\
+call:copyfile release\x64dbg_updater.dp64 %pluginroot%x64\plugins\
+call:copyfile README.md %pluginroot%README_updater.md
+call:copyfile CHANGELOG.md %pluginroot%CHANGELOG_updater.md
+call:copyfile LICENSE %pluginroot%LICENSE_updater
 
-x64plgmnrc.exe --createplugin x64dbg_updater --setrootpath release\pluginroot --setname x64dbg_updater --setversion %MY_BUILD_VERSION% --setauthor gORDon_vdLg --setbugreport "https://github.com/LFriede/x64dbg-updater/issues" --setinfo "Automatic update checks with the plugin manager on x64dbg startup."
+set lastdir=%cd%
+cd %pluginroot%
+7za a %lastdir%\release\x64dbg-updater-bin-%MY_BUILD_VERSION%.zip *
+cd %lastdir%
 
 pause
+exit
+
+REM functions
+
+:copyfile
+    xcopy /Y /-I %~1 %~2
+
+    if not %ERRORLEVEL%==0 (
+        color 0c
+        echo An error occured. Aborting.
+        pause
+        color 07
+        exit
+    )
+goto:eof
