@@ -18,8 +18,6 @@ On the first launch with this plugin installed the configuration dialog pops up.
 
 ## Build
 
-To build the plugin every Qt Creator, Qt 5.x and Visual Studio version should work. I'm using VS2019 and Qt 5.9.9 for developing but released versions are built with VS2013 and Qt 5.6.3, same as x64dbg builds.
+To build the plugin every Qt Creator, Qt 5.x and Visual Studio version should work. Released binarys are always built with the same environment x64dbg is built with. At time of writing this is Qt 5.12.12, VS2022 with 2017 C++ runtimes.
 
-Make sure you build in release mode because .lib files of the plugin SDK are built in release mode (must match) and x64dbg is shipped with release binarys of Qt. The Qt project file is configured to generate debug symbols (pdb) in release mode too, place them in x64dbgs plugin folder if you want to debug the plugin.
-
-If you have problems installing old Qt versions like 5.6.x you can trick the installer to use the old repositorys again as described here: [gist.github.com/LFriede/3d4cde1bfdb211db4896a0a8b890660b](https://gist.github.com/LFriede/3d4cde1bfdb211db4896a0a8b890660b)
+Make sure you build in release mode because .lib files of the plugin SDK are built in release mode (must match) and x64dbg is shipped with release binarys of Qt. The Qt project file is configured to generate debug symbols (pdb) in release mode too.

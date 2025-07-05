@@ -11,7 +11,3 @@ out_*/
 
 # MSVC
 *.pdb
-
-# Other
-*.x64dbg.zip
-*.x64dbg.zip.json
